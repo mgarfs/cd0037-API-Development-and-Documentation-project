@@ -35,3 +35,10 @@ DID in `QuestionView.js`:
 
 ### Testing
 Started the application and saw questions and categories generated, ten questions per page and pagination at the bottom of the screen for two pages. Clicking on the page numbers updates the questions.
+
+## REMAINING APP ROUTES
+
+### Testing
+* In the "List" tab / main screen, clicking on one of the categories in the left column causes only questions of that category to be shown.
+* When you click the trash icon next to a question, the question will be removed.
+

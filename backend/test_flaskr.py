@@ -15,7 +15,7 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
-        self.database_path = "postgresql://{}:{}@{}/{}".format('postgres','teK4Tby3','localhost:5432', self.database_name)
+        self.database_path = "postgresql://{}:{}@{}/{}".format('postgres','<password>','localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
         # binds the app to the current context
@@ -73,7 +73,20 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data2["currentCategory"])
         # Page 999 (non-existent)
         res = self.client().get("/questions?page=999")
-        self.assertEqual(res.status_code,404) # expecting not to find any questions on this far out page
+        self.assertEqual(res.status_code, 404) # expecting not to find any questions on this far out page
+
+    def test_retrieve_category_questions(self):
+        """Test GET category questions"""
+        # Questions for Category 1
+        res = self.client().get("/categories/1/questions")
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data["questions"])
+        self.assertTrue(data["totalQuestions"])
+        self.assertTrue(data["currentCategory"])
+        # Category 999 (non-existent)
+        res = self.client().get("/categories/999/questions")
+        self.assertEqual(res.status_code, 404)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
