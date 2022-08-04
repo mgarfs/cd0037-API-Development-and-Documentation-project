@@ -2,10 +2,12 @@
 # Changelog
 Created this file.
 
-## Install Dependencies
+## INITIAL SETUP
+
+### Install Dependencies
 DONE beforehand. Note: Not using Virtual Environment.
 
-## Set up Database
+### Set up Database
 DID:
 ```bash
     sudo service postgresql start
@@ -23,7 +25,7 @@ DID:
         + git update-index --skip-worktree backend/models.py
 ```
 
-## Run the Server
+### Run the Server
 DID:
 ```bash
     export FLASK_APP=flaskr
@@ -31,13 +33,15 @@ DID:
     flask run --reload
 ```
 
-## Tried Testing
+### Tried Testing
 DID:
 ```bash
     python3 test_flaskr.py
 ```
 
-## Implemented first app route = GET /categories
+## FIRST APP ROUTE WITH TESTING
+
+### Implemented app route = GET /categories
 DID updates to `__init__.py`:
 ```
     CORS(app)
@@ -45,7 +49,7 @@ DID updates to `__init__.py`:
     @app.route("/categories")
 ```
 
-## Set up Test Database
+### Set up Test Database
 DID:
 ```bash
     sudo -u postgres -i
@@ -55,7 +59,7 @@ DID:
         \i trivia.psql
 ```
 
-## Implemented test for GET /categories
+### Implemented test for GET /categories
 DID updates to `test_flaskr.py`:
 ```
     updated `database_path`
@@ -74,7 +78,21 @@ Ran 1 test in 0.037s
 OK
 ```
 
-## Updated bakend/README.md
+### Updated bakend/README.md
 DID:
     Documenting your Endpoints
     Testing (note about deprecation warnings)
+
+## SECOND APP ROUTE
+
+### Implemented app route = GET /questions?page=#
+DID updates to `__init__.py`:
+```
+    app.config['JSON_SORT_KEYS'] = False # we decide the order
+    def paginate_questions(request, questions)
+    @app.route("/questions")
+```
+DID updates to `test_flaskr.py`:
+```
+    test_retrieve_questions
+```
