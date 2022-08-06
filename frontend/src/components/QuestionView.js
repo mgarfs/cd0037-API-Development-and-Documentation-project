@@ -51,7 +51,7 @@ class QuestionView extends Component {
       pageNumbers.push(
         <span
           key={i}
-          className={`page-num ${i === this.state.page ? 'active' : ''}`}
+          className={`page-num clickable ${i === this.state.page ? 'active' : ''}`}
           onClick={() => {
             this.selectPage(i);
           }}
@@ -144,6 +144,7 @@ class QuestionView extends Component {
                 onClick={() => {
                   this.getByCategory(id);
                 }}
+                className='clickable'
               >
                 {this.state.categories[id]}
                 <img

@@ -158,7 +158,7 @@ You will need to provide detailed documentation of your API endpoints including 
 ```json
 {
     'previous_questions': [1, 4, 20, 15]
-    quiz_category': 'current category'
+    'quiz_category': 'current category'
 }
 ```
 - Returns: a single new question object:
