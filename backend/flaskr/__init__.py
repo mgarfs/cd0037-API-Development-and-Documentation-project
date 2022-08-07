@@ -120,8 +120,6 @@ def create_app(test_config=None):
         Returns: Does not need to return anything besides the appropriate HTTP status code.
         This removal will persist in the database and when you refresh the page.
 
-        @TODO: Optionally can return the id of the question. If you are able to modify the frontend, you can have it remove the question using the id instead of refetching the questions.
-        
         DELETE '/questions/${id}'
         """
         try:
@@ -134,10 +132,10 @@ def create_app(test_config=None):
         except:
             abort(422)
 
-    @app.route('/questions', methods=["POST"])
-    def create_question_or_search_questions():
+    def create_question(question, answer, difficulty, category):
         """
-        create_question:
+        NB: Called from create_question_or_search_questions "shared" app route /questions - see below
+
         Endpoint to POST a new question, which will require the question and answer text, category, and difficulty score.
         Sends a post request in order to add a new question
         Returns: Does not return any new data
@@ -150,8 +148,18 @@ def create_app(test_config=None):
             'difficulty': 1,
             'category': 3,
         }
-        
-        search_questions:
+        """
+        try:
+            question=Question(question, answer, category, difficulty)
+            question.insert()
+            return (jsonify({"success": True}), 200)
+        except:
+            abort(422)
+
+    def search_questions(search_term, category):
+        """
+        NB: Called from create_question_or_search_questions "shared" app route /questions - see below
+
         Endpoint to get questions based on a search term via a POST.
         It returns any questions for whom the search term is a substring of the question.
         Sends a post request in order to search for a specific question by search term
@@ -178,7 +186,39 @@ def create_app(test_config=None):
             'currentCategory': 'Entertainment'
         }
         """
-        # @TODO
+        questions=Question.query.order_by(Question.category).order_by(Question.id).filter(Question.question.ilike('%{}%'.format(search_term))).all()
+        page_questions=paginate_questions(request, questions)
+        total_questions=len(questions)
+        current_category=category
+        return jsonify(
+            {
+                'questions': page_questions,
+                'totalQuestions': total_questions,
+                'currentCategory': current_category
+            }
+        )
+    
+    @app.route('/questions', methods=["POST"])
+    def create_question_or_search_questions():
+        """
+        Shared endpoint (app route) for create_question or search_questions - see above
+        """
+        body = request.get_json()
+        search_term = body.get("searchTerm", None)
+        if search_term is None:
+            # Create question
+            new_question = body.get("question", None)
+            new_answer = body.get("answer", None)
+            new_difficulty = body.get("difficulty", None)
+            new_category = body.get("category", None)
+            if new_question is None or new_answer is None or new_difficulty is None or new_category is None:
+                abort(422)
+            else:
+                return create_question(new_question, new_answer, new_difficulty, new_category)
+        else:
+            # Search questions
+            category = body.get("category", None)
+            return search_questions(search_term, category)
 
     @app.route('/categories/<category_id>/questions')
     def retrieve_category_questions(category_id):
@@ -230,7 +270,10 @@ def create_app(test_config=None):
         request body:
         {
             'previous_questions': [1, 4, 20, 15],
-            'quiz_category': 'current category'
+            'quiz_category': {
+                'type': category_name, 
+                'id': category_id
+            }
         }
         reply:
         {
@@ -243,9 +286,25 @@ def create_app(test_config=None):
             }
         }
         """
-        # @TODO
-
-
+        body = request.get_json()
+        previous_questions = body.get("previous_questions", None)
+        quiz_category = body.get("quiz_category", None)
+        if quiz_category is None:
+            abort(422)
+        else:
+            try:
+                category_id = quiz_category['id']
+                if category_id == 0: # ALL
+                    question = Question.query.filter(Question.id.not_in(previous_questions)).first()
+                else:
+                    question = Question.query.filter(Question.category==str(category_id)).filter(Question.id.not_in(previous_questions)).first()
+                return jsonify(
+                    {
+                        'question': question.format()
+                    }
+                )
+            except:
+                abort(422)
 
     """
     Error handlers for all expected errors - including 404 and 422.

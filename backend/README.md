@@ -43,6 +43,9 @@ From within the `./src` directory first ensure you are working using your create
 To run the server, execute:
 
 ```bash
+export FLASK_APP=flaskr
+export FLASK_ENV=development
+export POSTGRES_PWD=<password>
 flask run --reload
 ```
 
@@ -147,7 +150,7 @@ You will need to provide detailed documentation of your API endpoints including 
 
 - Deletes a specified question using the id of the question
 - Request Arguments: id - integer
-- Returns: Does not need to return anything besides the appropriate HTTP status code. <TODO> Optionally can return the id of the question. If you are able to modify the frontend, you can have it remove the question using the id instead of refetching the questions.
+- Returns: Does not need to return anything besides the appropriate HTTP status code.
 
 ### Endpoint POST quizzes
 `POST '/quizzes'`
@@ -158,7 +161,10 @@ You will need to provide detailed documentation of your API endpoints including 
 ```json
 {
     'previous_questions': [1, 4, 20, 15]
-    'quiz_category': 'current category'
+    'quiz_category': {
+        'type': category_name, 
+        'id': category_id
+    }
 }
 ```
 - Returns: a single new question object:
@@ -226,12 +232,13 @@ You will need to provide detailed documentation of your API endpoints including 
 
 Write at least one test for the success and at least one error behavior of each endpoint using the unittest library.
 
-To deploy the tests, run
+To deploy the tests, run _MUST BE PERFORMED BEFORE EACH TEST RUN!_
 
 ```bash
 dropdb trivia_test
 createdb trivia_test
 psql trivia_test < trivia.psql
+export POSTGRES_PWD=<password>
 python test_flaskr.py
 ```
 
