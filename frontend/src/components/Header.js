@@ -13,6 +13,7 @@ class Header extends Component {
           onClick={() => {
             this.navTo('');
           }}
+          className='clickable'
         >
           Udacitrivia
         </h1>
@@ -20,6 +21,7 @@ class Header extends Component {
           onClick={() => {
             this.navTo('');
           }}
+          className='clickable'
         >
           List
         </h2>
@@ -27,6 +29,7 @@ class Header extends Component {
           onClick={() => {
             this.navTo('/add');
           }}
+          className='clickable'
         >
           Add
         </h2>
@@ -34,6 +37,7 @@ class Header extends Component {
           onClick={() => {
             this.navTo('/play');
           }}
+          className='clickable'
         >
           Play
         </h2>

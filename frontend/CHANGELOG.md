@@ -38,7 +38,12 @@ Started the application and saw questions and categories generated, ten question
 
 ## REMAINING APP ROUTES
 
-### Testing
+### Testing (after completing backend)
 * In the "List" tab / main screen, clicking on one of the categories in the left column causes only questions of that category to be shown.
 * When you click the trash icon next to a question, the question will be removed.
+* Submitting a question on the "Add" tab, clears the form, and following the question appears at the end of the questions in that category.
+* Searching by "title" phrase. The questions list will update to include only question that include that string within their question.
+* In the "Play" tab, after a user selects "All" or a category, one question at a time is displayed, the user is allowed to answerand shown whether they were correct or not.
+
+
 

@@ -15,7 +15,7 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
-        self.database_path = "postgresql://{}:{}@{}/{}".format('postgres','<password>','localhost:5432', self.database_name)
+        self.database_path = "postgresql://{}:{}@{}/{}".format('postgres',os.environ.get('POSTGRES_PWD'),'localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
         # binds the app to the current context
@@ -29,10 +29,6 @@ class TriviaTestCase(unittest.TestCase):
         """Executed after each test"""
         pass
 
-    """
-    TODO
-    Write at least one test for each test for successful operation and for expected errors.
-    """
     def test_retrieve_categories(self):
         """Test GET categories"""
         res = self.client().get("/categories")
@@ -87,6 +83,41 @@ class TriviaTestCase(unittest.TestCase):
         # Category 999 (non-existent)
         res = self.client().get("/categories/999/questions")
         self.assertEqual(res.status_code, 404)
+
+    def test_delete_question(self):
+        """Test DELETE question"""
+        # Delete an exising question
+        res = self.client().delete("/questions/5")
+        self.assertEqual(res.status_code, 200)
+        # Deleting the same question again - should result in error (showing that the previous attempt succeeded)
+        res = self.client().delete("/questions/5")
+        self.assertEqual(res.status_code, 422)
+
+    def test_create_question(self):
+        """Test create question"""
+        # Create a new question
+        new_question = {"question": "Is this the new answer string?", "answer": "Yes", "difficulty": 1, "category": 3}
+        res = self.client().post("/questions", json=new_question)
+        self.assertEqual(res.status_code, 200)
+
+    def test_search_questions(self):
+        """Test searching questions"""
+        # Search for some questions - knowing the result will be non-empty
+        res = self.client().post("/questions", json={"searchTerm": "title"})
+        self.assertEqual(res.status_code, 200)
+        # Search for some questions - knowing the result will be empty
+        res = self.client().post("/questions", json={"searchTerm": "non_existing_term"})
+        self.assertEqual(res.status_code, 200)
+        # Invalid request body
+        res = self.client().post("/questions", json={"searchForThis": "title"})
+        self.assertEqual(res.status_code, 422)
+
+    def test_retrieve_next_question(self):
+        """Test retrieving next question (in quizz)"""
+        # Ask for next question in Entertainment category (5)
+        next_question = { 'previous_questions': [2, 4], 'quiz_category': { 'type': 'Entertainment', 'id': 5 } }
+        res = self.client().post("/quizzes", json=next_question)
+        self.assertEqual(res.status_code, 200)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
